@@ -9,6 +9,8 @@ pip install pandas psycopg2
 ## config file
 Watch this [config explanation](https://github.com/r3card0/Python-connection-to-rdms/tree/main/mysql#config-file)
 
+[config.py]()
+
 ## Connect_postgres file
 The connect_postgres file, requires to import [psycopg2](https://pypi.org/project/psycopg2/) library and also needs to import the class Config from the module config located on config file.
 
