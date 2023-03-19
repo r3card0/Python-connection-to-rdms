@@ -1,5 +1,3 @@
-
-
 import psycopg2 as p2
 from config import Config
 
