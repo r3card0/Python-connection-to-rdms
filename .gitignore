@@ -1,3 +1,5 @@
 venv_connect/
 config_.py
 config_class.py
+mysql/__pycache__/
+__pycache__/
