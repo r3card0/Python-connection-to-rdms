@@ -8,6 +8,7 @@ La biblioteca `psycopg2` es una herramienta popular para interactuar con bases d
 |------------------------------|-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `connect`                    | Establecer una conexión con la base de datos PostgreSQL.                                           | `conn = psycopg2.connect(dsn)`                                                               | ```python<br>import psycopg2<br>conn = psycopg2.connect(dbname='test', user='user', password='pass', host='localhost')```                                                |
 | `cursor`                     | Crear un cursor para ejecutar comandos SQL.                                                       | `cur = conn.cursor()`                                                                         | ```python<br>cur = conn.cursor()```                                                                                                                                         |
+| **`RealDictCursor`**         | Retornar los resultados de una consulta como diccionarios donde las claves son los nombres de las columnas. | `cur = conn.cursor(cursor_factory=RealDictCursor)`                                           | ```python<br>from psycopg2.extras import RealDictCursor<br>cur = conn.cursor(cursor_factory=RealDictCursor)<br>cur.execute("SELECT * FROM table_name")<br>result = cur.fetchall()```                          |
 | `execute`                    | Ejecutar una consulta SQL usando el cursor.                                                       | `cur.execute(sql, params)`                                                                   | ```python<br>cur.execute("INSERT INTO table_name (column) VALUES (%s)", ("value",))```                                                                                    |
 | `fetchone`                   | Recuperar una fila del resultado de una consulta.                                                 | `row = cur.fetchone()`                                                                       | ```python<br>cur.execute("SELECT * FROM table_name")<br>row = cur.fetchone()```                                                                                           |
 | `fetchall`                   | Recuperar todas las filas del resultado de una consulta.                                          | `rows = cur.fetchall()`                                                                      | ```python<br>cur.execute("SELECT * FROM table_name")<br>rows = cur.fetchall()```                                                                                           |
@@ -69,4 +70,54 @@ finally:
 ```
 
 ---
+
+### **Explicación de `RealDictCursor`**
+
+`RealDictCursor` es una clase proporcionada por el módulo `psycopg2.extras` que extiende la funcionalidad de los cursores estándar de `psycopg2`. Al usar este tipo de cursor, los resultados de las consultas se devuelven como diccionarios Python, en lugar de tuplas, donde las claves son los nombres de las columnas. Esto hace que los resultados sean más legibles y fáciles de manipular.
+
+---
+
+### **Ventajas de usar `RealDictCursor`**
+1. **Legibilidad:** Accedes a los valores directamente por el nombre de las columnas en lugar de índices, lo que mejora la claridad del código.
+2. **Facilidad de uso:** Evitas errores que pueden ocurrir al usar índices incorrectos.
+3. **Compatibilidad:** Útil al trabajar con datos que serán enviados como JSON, ya que los diccionarios son fáciles de serializar.
+
+---
+
+### **Ejemplo práctico de `RealDictCursor`**
+```python
+import psycopg2
+from psycopg2.extras import RealDictCursor
+
+# Configuración de la conexión
+conn = psycopg2.connect(dbname='testdb', user='user', password='pass', host='localhost')
+cur = conn.cursor(cursor_factory=RealDictCursor)
+
+try:
+    # Crear una tabla
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS categories (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(50) UNIQUE NOT NULL
+        )
+    """)
+    conn.commit()
+
+    # Insertar datos
+    cur.execute("INSERT INTO categories (name) VALUES (%s) RETURNING id, name", ("Example",))
+    result = cur.fetchone()
+    print("Inserted Row:", result)
+
+    # Consultar datos
+    cur.execute("SELECT * FROM categories")
+    rows = cur.fetchall()
+    for row in rows:
+        print(row)  # Salida como diccionarios
+
+finally:
+    # Liberar recursos
+    cur.close()
+    conn.close()
+```
+
 
