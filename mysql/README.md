@@ -26,6 +26,7 @@ Aquí tienes una tabla que resume los métodos de la biblioteca `configparser`, 
 1. **`read(filename)`**: 
    - Lee el archivo de configuración ubicado en la ruta `filename`.
    - En el código, esto se utiliza para cargar el archivo INI que contiene las configuraciones de la base de datos.
+   - **IMPORTANTE** el método `read`, opera directamente sobre el objeto `self.parser`, modificando su estado interno, esto quiere decir que al modificarlo no  es necesario crear una variable en si porque carga las configuraciones desde el archivo que se especifica en ' filename' y las almacena internamente en el obejot ' self.parser'. Este almacenamiento interno permite que el resto de métodos como `has_section` o `items` accedan a la información leída sin necesidad de guardar el archivo explícitamente en una variable.
 
 2. **`has_section(section)`**: 
    - Verifica si el archivo de configuración tiene una sección específica.
